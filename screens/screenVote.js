@@ -4,7 +4,10 @@ function screenVote(container, isRunoff = false) {
     ? State.activePlayers().filter(p => State.tiedNames.includes(p.name))
     : State.activePlayers();
 
-  const voters = State.activePlayers();
+  const activeNames = new Set(State.activePlayers().map(p => p.name));
+  const voters = State.playOrder
+    .filter(name => activeNames.has(name))
+    .map(name => State.getPlayer(name));
 
   container.innerHTML = `
     <h2>${isRunoff ? 'Égalité ! Re-vote' : 'Vote'}</h2>

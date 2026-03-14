@@ -132,6 +132,55 @@ async function playFullGame(page, gameNum) {
   await page.waitForSelector('#start-btn');
   await shot(page, '02-setup-roles');
 
+  // ── Vote screen order bug ─────────────────────────────────────────────────
+  // Verify that voters are listed in playOrder (shuffled), not in the role-
+  // assignment order where the imposter is always index 0.
+  await page.click('#start-btn');
+  await page.waitForSelector('.player-card', { timeout: 10000 });
+  await revealAllPlayers(page);
+  await page.waitForSelector('#vote-btn');
+  await page.click('#vote-btn');
+  await page.waitForSelector('.vote-row');
+
+  const voterOrder = await page.$$eval('.vote-row', rows =>
+    rows.map(r => r.querySelector('strong').textContent.trim())
+  );
+  const playOrder = await page.evaluate(() => State.playOrder);
+  const players   = await page.evaluate(() => State.players.map(p => ({ name: p.name, role: p.role })));
+
+  // The rendered voter order must exactly match State.playOrder
+  check(
+    'Vote screen lists voters in playOrder (not role-assignment order)',
+    JSON.stringify(voterOrder) === JSON.stringify(playOrder)
+  );
+
+  // The player at index 0 in State.players is always the imposter (by design
+  // in roles.js). If the old bug were present, voterOrder[0] would always
+  // equal players[0].name. Assert this is NOT the case across 10 tries by
+  // checking that playOrder[0] !== players[0].name at least sometimes.
+  // For a single run, just assert playOrder order !== players[] order.
+  const playerArrayOrder = players.map(p => p.name);
+  const sameAsAssignmentOrder = JSON.stringify(voterOrder) === JSON.stringify(playerArrayOrder);
+  // We can't guarantee they differ in one run (1/24 chance they match by luck),
+  // so instead assert the imposter (players[0]) is not hardcoded first.
+  // The meaningful check is the playOrder match above; log role info for visibility.
+  const imposter = players.find(p => p.role === 'imposter');
+  console.log(`  Imposter: ${imposter ? imposter.name : '?'}, first voter: ${voterOrder[0]}, playOrder[0]: ${playOrder[0]}`);
+  console.log(`  Voter order: [${voterOrder.join(', ')}]`);
+  console.log(`  playOrder:   [${playOrder.join(', ')}]`);
+
+  await shot(page, '02b-vote-order');
+
+  // Navigate back to setup for the main game flow
+  await page.goto(BASE_URL);
+  await page.waitForSelector('#name-input');
+  for (const name of ['Alice', 'Bob', 'Carol', 'Dave']) {
+    await page.fill('#name-input', name);
+    await page.click('#add-btn');
+  }
+  await page.click('#next-btn');
+  await page.waitForSelector('#start-btn');
+
   // ── Game 1 ────────────────────────────────────────────────────────────────
   await page.click('#start-btn');
   const g1ended = await playFullGame(page, 1);
