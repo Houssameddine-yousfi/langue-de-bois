@@ -1,0 +1,587 @@
+/* ===========================
+   Reset & Base
+=========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+#app {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 16px 48px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #e94560;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 20px 0 8px;
+  color: #ccc;
+}
+
+p {
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+ol, ul {
+  padding-left: 20px;
+}
+
+ol li, ul li {
+  margin-bottom: 6px;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.1s;
+  background: #16213e;
+  color: #eee;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+}
+
+button.primary {
+  background: #e94560;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  padding: 14px;
+  margin-top: 16px;
+  font-size: 1.05rem;
+  border-radius: 10px;
+}
+
+button.primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+button.secondary {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #333;
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+button.secondary:hover:not(:disabled) {
+  border-color: #666;
+  color: #eee;
+}
+
+/* ===========================
+   Input
+=========================== */
+input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 2px solid #333;
+  background: #16213e;
+  color: #eee;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  margin-bottom: 8px;
+}
+
+input[type="text"]:focus {
+  border-color: #e94560;
+}
+
+/* ===========================
+   Utility
+=========================== */
+.error {
+  color: #e94560;
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+.hidden {
+  display: none;
+}
+
+.subtle {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+/* ===========================
+   Setup Names Screen
+=========================== */
+.input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.input-row input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.input-row button {
+  white-space: nowrap;
+  padding: 12px 16px;
+  background: #0f3460;
+  color: #eee;
+  border-radius: 8px;
+}
+
+.input-row button:hover {
+  background: #16457a;
+}
+
+#player-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+#player-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #16213e;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  font-size: 1rem;
+}
+
+.remove-btn {
+  background: transparent;
+  color: #e94560;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  width: auto;
+}
+
+.remove-btn:hover {
+  background: rgba(233, 69, 96, 0.15);
+}
+
+/* ===========================
+   Setup Roles Screen
+=========================== */
+label {
+  display: block;
+  font-size: 1rem;
+  color: #ccc;
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+label span {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #e94560;
+  margin-left: 8px;
+}
+
+.counter-row {
+  display: flex;
+  gap: 12px;
+}
+
+.counter-row button {
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  background: #0f3460;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.counter-row button:hover:not(:disabled) {
+  background: #16457a;
+}
+
+#role-summary {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-top: 16px;
+  text-align: center;
+  background: #16213e;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* ===========================
+   Reveal Screen
+=========================== */
+.player-cards {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+
+.player-card {
+  background: #16213e;
+  color: #eee;
+  width: 100%;
+  padding: 20px;
+  margin: 8px 0;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.player-card:hover {
+  background: #0f3460;
+  border-color: #e94560;
+}
+
+.player-card:active {
+  background: #0f3460;
+}
+
+/* Private reveal */
+.private-reveal {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.private-reveal h2 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.secret-word {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #e94560;
+  margin: 32px 0;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.no-word {
+  font-size: 1.5rem;
+  color: #aaa;
+  margin: 32px 0 8px;
+  font-style: italic;
+}
+
+.role-hint {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+/* Handoff screen */
+.handoff-screen {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.handoff-screen h2 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+
+/* ===========================
+   Discussion Screen
+=========================== */
+#play-order {
+  margin: 16px 0;
+  padding-left: 20px;
+}
+
+#play-order li {
+  padding: 8px 0;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #222;
+}
+
+#play-order li:first-child {
+  font-weight: bold;
+  color: #e94560;
+}
+
+/* ===========================
+   Vote Screen
+=========================== */
+.vote-row {
+  background: #16213e;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.vote-row strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.vote-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.vote-target {
+  background: #0f3460;
+  color: #eee;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  border: 2px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.vote-target:hover {
+  background: #16457a;
+}
+
+.vote-target.selected {
+  background: #e94560;
+  color: white;
+  border-color: #ff6b85;
+}
+
+#vote-status {
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ===========================
+   Elimination Screen
+=========================== */
+.elimination-screen {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.elimination-screen h2 {
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+}
+
+.role-reveal {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: #ccc;
+}
+
+.role-reveal strong {
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.word-reveal {
+  font-size: 1rem;
+  color: #aaa;
+  margin-bottom: 16px;
+}
+
+.word-reveal strong {
+  color: #e94560;
+}
+
+/* ===========================
+   Mr White Guess Screen
+=========================== */
+.mrwhite-screen {
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.mrwhite-screen h2 {
+  margin-bottom: 12px;
+}
+
+.mrwhite-screen p {
+  color: #ccc;
+  margin-bottom: 20px;
+}
+
+.mrwhite-screen input {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+/* ===========================
+   End Screen
+=========================== */
+.end-screen {
+  padding: 16px 0;
+}
+
+.winner-banner {
+  text-align: center;
+  padding: 24px 16px;
+  background: #16213e;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.winner-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+}
+
+.winner-banner h2 {
+  font-size: 1.4rem;
+  color: #e94560;
+}
+
+.word-reveal-box {
+  background: #16213e;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+.word-reveal-box strong {
+  color: #e94560;
+}
+
+.role-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.role-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.role-civilian    { background: #0f3460; }
+.role-imposter    { background: #6b1a1a; }
+.role-misterwhite { background: #2d2d2d; }
+
+.role-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.role-label {
+  color: #ccc;
+  font-size: 0.85rem;
+}
+
+.role-word {
+  color: #aaa;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ===========================
+   Scoring
+=========================== */
+.score-table {
+  margin-bottom: 20px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.score-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.score-role {
+  color: #ccc;
+  font-size: 0.85rem;
+}
+
+.score-earned {
+  font-weight: bold;
+  color: #4caf50;
+  min-width: 28px;
+  text-align: right;
+}
+
+.score-earned.score-zero {
+  color: #555;
+}
+
+.score-total {
+  font-weight: bold;
+  color: #fff;
+  min-width: 48px;
+  text-align: right;
+}
+
+.eliminated-mark {
+  color: #e94560;
+  font-size: 0.8rem;
+}
+
+.player-score {
+  color: #e94560;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 4px;
+}

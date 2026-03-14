@@ -1,0 +1,208 @@
+const { chromium } = require('@playwright/test');
+const { spawn }    = require('child_process');
+const path         = require('path');
+const fs           = require('fs');
+
+const SCREENSHOTS = path.join(__dirname, 'test-screenshots');
+const BASE_URL    = 'http://localhost:8080';
+
+async function shot(page, name) {
+  if (!fs.existsSync(SCREENSHOTS)) fs.mkdirSync(SCREENSHOTS);
+  await page.screenshot({ path: path.join(SCREENSHOTS, `${name}.png`), fullPage: true });
+  console.log(`  📸 ${name}.png`);
+}
+
+// Reveal words for all player cards on the reveal screen
+async function revealAllPlayers(page) {
+  const cards = await page.$$eval('.player-card', els => els.map(e => e.textContent.trim()));
+  for (let i = 0; i < cards.length; i++) {
+    await page.click('.player-card');
+    await page.waitForSelector('#memorized-btn');
+    await page.click('#memorized-btn');
+    if (i < cards.length - 1) {
+      await page.waitForSelector('#ready-btn');
+      await page.click('#ready-btn');
+    }
+  }
+}
+
+// Play one vote round; returns true if the end screen was reached
+async function playRound(page, roundNum) {
+  await page.waitForSelector('#vote-btn');
+  console.log(`    Round ${roundNum}: voting…`);
+  await page.click('#vote-btn');
+  await page.waitForSelector('.vote-target');
+
+  // Each voter picks their first available target
+  const rows = await page.$$('.vote-row');
+  for (const row of rows) {
+    const btn = await row.$('.vote-target');
+    if (btn) await btn.click();
+  }
+  await page.click('#confirm-btn');
+  await page.waitForSelector('h2');
+
+  // Handle runoff
+  const h2 = await page.$eval('h2', el => el.textContent.trim());
+  if (h2.includes('Égalité')) {
+    console.log('    → Runoff vote');
+    const runoffBtns = await page.$$('.vote-target');
+    for (const b of runoffBtns) await b.click().catch(() => {});
+    await page.click('#confirm-btn');
+    await page.waitForSelector('h2');
+  }
+
+  // Handle Mr White guess
+  const guessInput = await page.$('#guess-input');
+  if (guessInput) {
+    console.log('    → Mr White guessing…');
+    await page.fill('#guess-input', 'mauvaisereponse');
+    await page.click('#guess-btn');
+    await page.waitForTimeout(2500);
+  }
+
+  // Handle elimination continue button
+  const continueBtn = await page.$('#continue-btn');
+  if (continueBtn) {
+    const elim = await page.$eval('h2', el => el.textContent.trim());
+    console.log(`    → Eliminated: "${elim}"`);
+    await page.click('#continue-btn');
+    await page.waitForSelector('h2');
+  }
+
+  return !!(await page.$('#play-again-btn'));
+}
+
+// Play through an entire game (up to 20 rounds) and return the end screen score data
+async function playFullGame(page, gameNum) {
+  console.log(`\n--- Game ${gameNum} ---`);
+  await page.waitForSelector('.player-card', { timeout: 10000 });
+  await revealAllPlayers(page);
+
+  for (let r = 1; r <= 20; r++) {
+    const ended = await playRound(page, r);
+    if (ended) return true;
+  }
+  return false;
+}
+
+// ─── MAIN ──────────────────────────────────────────────────────────────────────
+(async () => {
+  // Start local HTTP server
+  const server = spawn('python3', ['-m', 'http.server', '8080'], {
+    cwd: __dirname,
+    stdio: 'ignore'
+  });
+  await new Promise(r => setTimeout(r, 800));
+
+  const browser = await chromium.launch({ headless: true });
+  const page    = await browser.newPage();
+  page.setViewportSize({ width: 480, height: 900 });
+
+  const errors = [];
+  page.on('console',   msg => { if (msg.type() === 'error') errors.push(msg.text()); });
+  page.on('pageerror', err => errors.push(err.message));
+
+  const results = [];
+  function check(label, value) {
+    const ok = value === true;
+    results.push({ label, ok });
+    console.log(`  ${ok ? '✅' : '❌'} ${label}`);
+  }
+
+  console.log('\n=== TEST: Langue de Bois ===\n');
+
+  // ── Setup ─────────────────────────────────────────────────────────────────
+  await page.goto(BASE_URL);
+  await page.waitForSelector('#name-input');
+
+  const title = await page.$eval('h1', el => el.textContent.trim());
+  check('Title is "Langue de Bois"', title === 'Langue de Bois');
+  await shot(page, '01-setup-names');
+
+  for (const name of ['Alice', 'Bob', 'Carol', 'Dave']) {
+    await page.fill('#name-input', name);
+    await page.click('#add-btn');
+  }
+
+  const nextDisabled = await page.$eval('#next-btn', btn => btn.disabled);
+  check('Next button enabled with 4 players', !nextDisabled);
+
+  await page.click('#next-btn');
+  await page.waitForSelector('#start-btn');
+  await shot(page, '02-setup-roles');
+
+  // ── Game 1 ────────────────────────────────────────────────────────────────
+  await page.click('#start-btn');
+  const g1ended = await playFullGame(page, 1);
+  check('Game 1 reached end screen', g1ended);
+
+  if (g1ended) {
+    await shot(page, '03-end-screen-game1');
+
+    const winner1 = await page.$eval('.winner-banner h2', el => el.textContent.trim());
+    console.log(`  Winner: "${winner1}"`);
+
+    const scoreRows = await page.$$('.score-row');
+    check('Score table has 4 rows', scoreRows.length === 4);
+
+    const earned = await page.$$eval('.score-earned', els => els.map(e => e.textContent.trim()));
+    console.log(`  Points earned: ${earned.join(', ')}`);
+    check('At least one player earned points', earned.some(v => v !== '+0'));
+
+    const totals1 = await page.$$eval('.score-total', els => els.map(e => parseInt(e.textContent)));
+    console.log(`  Totals after game 1: ${totals1.join(', ')}`);
+    check('All totals are non-negative', totals1.every(v => v >= 0));
+
+    // ── Game 2: Play Again ────────────────────────────────────────────────
+    await page.click('#play-again-btn');
+    await page.waitForSelector('#start-btn');
+    await shot(page, '04-setup-roles-game2');
+    await page.click('#start-btn');
+
+    const g2ended = await playFullGame(page, 2);
+    check('Game 2 reached end screen', g2ended);
+
+    if (g2ended) {
+      await shot(page, '05-end-screen-game2');
+
+      const totals2 = await page.$$eval('.score-total', els => els.map(e => parseInt(e.textContent)));
+      console.log(`  Totals after game 2: ${totals2.join(', ')}`);
+
+      const sum1 = totals1.reduce((a, b) => a + b, 0);
+      const sum2 = totals2.reduce((a, b) => a + b, 0);
+      check('Scores accumulated across Play Again', sum2 > sum1);
+
+      // ── Reset clears scores ──────────────────────────────────────────────
+      await page.click('#reset-btn');
+      await page.waitForSelector('#name-input');
+      await shot(page, '06-after-reset');
+
+      const badges = await page.$$('.player-score');
+      check('Score badges gone after full reset', badges.length === 0);
+
+      // Re-add players to confirm scores start at 0
+      for (const name of ['Alice', 'Bob', 'Carol', 'Dave']) {
+        await page.fill('#name-input', name);
+        await page.click('#add-btn');
+      }
+      const badgesAfterAdd = await page.$$('.player-score');
+      check('No score badges for fresh players after reset', badgesAfterAdd.length === 0);
+    }
+  }
+
+  // ── JS errors ─────────────────────────────────────────────────────────────
+  check('No JavaScript errors', errors.length === 0);
+  if (errors.length > 0) errors.forEach(e => console.log(`    - ${e}`));
+
+  // ── Summary ───────────────────────────────────────────────────────────────
+  const passed = results.filter(r => r.ok).length;
+  const total  = results.length;
+  console.log(`\n=== ${passed}/${total} checks passed ===\n`);
+
+  await browser.close();
+  server.kill();
+  console.log('Screenshots saved to: test-screenshots/\n');
+
+  if (passed < total) process.exit(1);
+})();
