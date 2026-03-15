@@ -309,6 +309,14 @@ label span {
   line-height: 1.1;
 }
 
+.word-hint {
+  font-size: 0.95rem;
+  color: #aaa;
+  font-style: italic;
+  margin-top: -20px;
+  margin-bottom: 24px;
+}
+
 .no-word {
   font-size: 1.5rem;
   color: #aaa;

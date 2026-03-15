@@ -52,7 +52,8 @@ function screenReveal(container) {
         ${player.role === 'misterwhite'
           ? `<p class="no-word">Vous n'avez pas de mot.</p>
              <p class="role-hint">Rôle : Monsieur Blanc</p>`
-          : `<p class="secret-word">${player.word}</p>`
+          : `<p class="secret-word">${player.word}</p>
+             ${player.hint ? `<p class="word-hint">${player.hint}</p>` : ''}`
         }
         <button id="memorized-btn" class="primary">J'ai mémorisé ✓</button>
       </div>

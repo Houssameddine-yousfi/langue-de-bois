@@ -7,19 +7,26 @@ const Roles = {
     State.players = names.map((name, i) => {
       let role, word;
 
+      let hint;
       if (i < State.impostorCount) {
         role = 'imposter';
         word = State.wordPair.imposter;
+        hint = State.wordPair.imposter_hint || null;
       } else if (i < State.impostorCount + State.mrWhiteCount) {
         role = 'misterwhite';
         word = null;
+        hint = null;
       } else {
         role = 'civilian';
         word = State.wordPair.word;
+        hint = State.wordPair.word_hint || null;
       }
 
-      return { name, role, word, revealed: false, eliminated: false };
+      return { name, role, word, hint, revealed: false, eliminated: false };
     });
+
+    // Shuffle so role-assignment order doesn't leak into reveal / vote-target order
+    shuffle(State.players);
   },
 
   // Generate play order for a round — first player cannot be Mr White

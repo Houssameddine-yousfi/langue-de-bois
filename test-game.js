@@ -171,6 +171,73 @@ async function playFullGame(page, gameNum) {
 
   await shot(page, '02b-vote-order');
 
+  // ── Randomness: imposter not always first in reveal or vote-target order ──
+  // Run 15 games and record the imposter's index in State.players (which
+  // drives both the reveal card list and the vote candidate list).
+  // With 4 players the odds of always landing at index 0 by chance: (1/4)^15 ≈ 10^-9.
+  console.log('\n--- Randomness check (15 iterations) ---');
+  const imposterIndexes = [];
+
+  for (let i = 0; i < 15; i++) {
+    await page.goto(BASE_URL);
+    await page.waitForSelector('#name-input');
+    for (const name of ['Alice', 'Bob', 'Carol', 'Dave']) {
+      await page.fill('#name-input', name);
+      await page.click('#add-btn');
+    }
+    await page.click('#next-btn');
+    await page.waitForSelector('#start-btn');
+    await page.click('#start-btn');
+    await page.waitForSelector('.player-card', { timeout: 10000 });
+
+    const idx = await page.evaluate(() =>
+      State.players.findIndex(p => p.role === 'imposter')
+    );
+    imposterIndexes.push(idx);
+  }
+
+  console.log(`  Imposter positions across 15 runs: [${imposterIndexes.join(', ')}]`);
+  check(
+    'Imposter not always first in State.players order (reveal & vote targets)',
+    !imposterIndexes.every(i => i === 0)
+  );
+
+  // ── DOM check: reveal card order matches State.players ────────────────────
+  // (still on the last reveal screen from the loop above)
+  const revealCardNames = await page.$$eval('.player-card', els =>
+    els.map(e => e.textContent.trim())
+  );
+  const statePlayerNames = await page.evaluate(() => State.players.map(p => p.name));
+  check(
+    'Reveal screen card order matches State.players order',
+    JSON.stringify(revealCardNames) === JSON.stringify(statePlayerNames)
+  );
+
+  // ── DOM check: vote target order matches State.players order ─────────────
+  // Skip through reveal to reach vote screen
+  await revealAllPlayers(page);
+  await page.waitForSelector('#vote-btn');
+  await page.click('#vote-btn');
+  await page.waitForSelector('.vote-target');
+
+  // Grab the candidate names from the first voter's target buttons
+  const firstVoterName = await page.$eval('.vote-row strong', el => el.textContent.trim());
+  const targetNames = await page.$$eval(
+    '.vote-row:first-child .vote-target',
+    btns => btns.map(b => b.dataset.target)
+  );
+  // Expected: all active players except the first voter, in State.players order
+  const expectedTargets = await page.evaluate(name =>
+    State.activePlayers().filter(p => p.name !== name).map(p => p.name),
+    firstVoterName
+  );
+  check(
+    'Vote target order matches State.players order',
+    JSON.stringify(targetNames) === JSON.stringify(expectedTargets)
+  );
+
+  await shot(page, '02c-vote-targets-order');
+
   // Navigate back to setup for the main game flow
   await page.goto(BASE_URL);
   await page.waitForSelector('#name-input');
