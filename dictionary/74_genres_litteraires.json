@@ -44,7 +44,7 @@
     {"word": "bande dessinée", "imposter": "manga"},
     {"word": "manga", "imposter": "bande dessinée"},
     {"word": "comic book", "imposter": "bande dessinée"},
-    {"word": "roman graphique", "imposter": "bande dessinée"},
+    {"word": "roman graphique", "imposter": "album illustré"},
     {"word": "album illustré", "imposter": "livre pour enfants"},
     {"word": "conte pour enfants", "imposter": "roman jeunesse"},
     {"word": "roman young adult", "imposter": "roman adolescent"},

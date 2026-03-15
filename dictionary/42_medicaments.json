@@ -48,7 +48,7 @@
     {"word": "remède de grand-mère", "imposter": "médecine naturelle"},
     {"word": "thermomètre", "imposter": "tensiomètre"},
     {"word": "stéthoscope", "imposter": "tensiomètre"},
-    {"word": "oxymètre", "imposter": "tensiomètre"},
+    {"word": "oxymètre", "imposter": "glucomètre"},
     {"word": "électrocardiogramme", "imposter": "électroencéphalogramme"},
     {"word": "radiographie", "imposter": "scanner"},
     {"word": "IRM", "imposter": "scanner"}

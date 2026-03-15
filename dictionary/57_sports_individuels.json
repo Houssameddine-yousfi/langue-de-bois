@@ -45,7 +45,7 @@
     {"word": "heptathlon", "imposter": "décathlon"},
     {"word": "course à pied", "imposter": "marche rapide"},
     {"word": "marche nordique", "imposter": "marche rapide"},
-    {"word": "biathlon", "imposter": "triathlon"},
+    {"word": "biathlon", "imposter": "duathlon"},
     {"word": "cross-country", "imposter": "trail"},
     {"word": "trail", "imposter": "cross"},
     {"word": "ultra-trail", "imposter": "marathon"},

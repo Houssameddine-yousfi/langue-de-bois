@@ -49,7 +49,7 @@
     {"word": "rover", "imposter": "module"},
     {"word": "station spatiale", "imposter": "ISS"},
     {"word": "ISS", "imposter": "station spatiale"},
-    {"word": "vaisseau spatial", "imposter": "navette"},
+    {"word": "vaisseau spatial", "imposter": "fusée"},
     {"word": "avion solaire", "imposter": "avion électrique"},
     {"word": "avion à hydrogène", "imposter": "avion électrique"}
   ]

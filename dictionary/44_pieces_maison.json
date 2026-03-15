@@ -45,7 +45,7 @@
     {"word": "chalet", "imposter": "villa"},
     {"word": "manoir", "imposter": "château"},
     {"word": "château", "imposter": "manoir"},
-    {"word": "ferme", "imposter": "maison"},
+    {"word": "ferme", "imposter": "pavillon"},
     {"word": "gîte", "imposter": "ferme"},
     {"word": "piscine intérieure", "imposter": "salle de bain"},
     {"word": "sauna", "imposter": "hammam"},

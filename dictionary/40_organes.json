@@ -34,7 +34,7 @@
     {"word": "thymus", "imposter": "rate"},
     {"word": "hypothalamus", "imposter": "hypophyse"},
     {"word": "épiphyse", "imposter": "hypophyse"},
-    {"word": "glande pinéale", "imposter": "hypophyse"},
+    {"word": "glande pinéale", "imposter": "thalamus"},
     {"word": "cortex", "imposter": "cerveau"},
     {"word": "lobe frontal", "imposter": "lobe pariétal"},
     {"word": "hippocampe", "imposter": "amygdale"},
@@ -49,7 +49,7 @@
     {"word": "tympan", "imposter": "cochlée"},
     {"word": "cochlée", "imposter": "tympan"},
     {"word": "sinus", "imposter": "trachée"},
-    {"word": "bronche", "imposter": "trachée"},
+    {"word": "bronche", "imposter": "larynx"},
     {"word": "alvéole", "imposter": "bronche"},
     {"word": "nerf optique", "imposter": "rétine"}
   ]

@@ -43,7 +43,7 @@
     {"word": "trigonométrie", "imposter": "algèbre"},
     {"word": "calcul", "imposter": "arithmétique"},
     {"word": "arithmétique", "imposter": "calcul"},
-    {"word": "physique-chimie", "imposter": "chimie"},
+    {"word": "physique-chimie", "imposter": "sciences physiques"},
     {"word": "biochimie", "imposter": "chimie organique"},
     {"word": "chimie organique", "imposter": "chimie minérale"},
     {"word": "mécanique", "imposter": "thermodynamique"},
@@ -51,6 +51,6 @@
     {"word": "optique", "imposter": "acoustique"},
     {"word": "astronomie", "imposter": "astrophysique"},
     {"word": "géologie", "imposter": "pédologie"},
-    {"word": "écologie", "imposter": "biologie"}
+    {"word": "écologie", "imposter": "sciences de la vie"}
   ]
 }

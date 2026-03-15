@@ -39,7 +39,7 @@
     {"word": "accordéon", "imposter": "bandonéon"},
     {"word": "bandonéon", "imposter": "accordéon"},
     {"word": "harmonica", "imposter": "accordéon"},
-    {"word": "concertina", "imposter": "accordéon"},
+    {"word": "concertina", "imposter": "mélodéon"},
     {"word": "synthétiseur", "imposter": "piano électrique"},
     {"word": "guitare électrique", "imposter": "guitare acoustique"},
     {"word": "guitare acoustique", "imposter": "guitare électrique"},
