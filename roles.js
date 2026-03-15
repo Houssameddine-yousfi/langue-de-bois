@@ -33,14 +33,15 @@ const Roles = {
   generatePlayOrder() {
     const active = shuffle(State.activePlayers().map(p => p.name));
 
-    // If first player is Mr White, swap with first non-Mr White
+    // If first player is Mr White, swap with a random non-Mr White player
     const firstPlayer = State.getPlayer(active[0]);
     if (firstPlayer && firstPlayer.role === 'misterwhite') {
-      const swapIdx = active.findIndex(name =>
-        State.getPlayer(name).role !== 'misterwhite'
-      );
-      if (swapIdx !== -1) {
-        [active[0], active[swapIdx]] = [active[swapIdx], active[0]];
+      const swapCandidates = active
+        .map((name, idx) => ({ name, idx }))
+        .filter(({ idx, name }) => idx > 0 && State.getPlayer(name).role !== 'misterwhite');
+      if (swapCandidates.length > 0) {
+        const { idx } = swapCandidates[Math.floor(Math.random() * swapCandidates.length)];
+        [active[0], active[idx]] = [active[idx], active[0]];
       }
     }
 

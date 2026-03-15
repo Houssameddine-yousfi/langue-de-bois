@@ -238,6 +238,39 @@ async function playFullGame(page, gameNum) {
 
   await shot(page, '02c-vote-targets-order');
 
+  // ── Mr White not always second in play order ──────────────────────────────
+  // With the old bug, findIndex always picked index 1 when Mr White landed at
+  // index 0, making Mr White permanently second. Run 20 games with Mr White
+  // enabled and assert he appears at positions other than 1.
+  // With 3 valid positions (1–3 out of 4), always landing on 1: (1/3)^20 ≈ 10^-10.
+  console.log('\n--- Mr White position check (20 iterations) ---');
+  const mrWhitePositions = [];
+
+  for (let i = 0; i < 20; i++) {
+    await page.goto(BASE_URL);
+    await page.waitForSelector('#name-input');
+    for (const name of ['Alice', 'Bob', 'Carol', 'Dave', 'Eve']) {
+      await page.fill('#name-input', name);
+      await page.click('#add-btn');
+    }
+    await page.click('#next-btn');
+    await page.waitForSelector('#start-btn');
+
+    // Enable 1 Mr White (5 players: 1 imposter + 1 MrWhite + 3 civilians = valid)
+    await page.click('#mw-up');
+    await page.click('#start-btn');
+    await page.waitForSelector('.player-card', { timeout: 10000 });
+
+    const pos = await page.evaluate(() =>
+      State.playOrder.indexOf(State.players.find(p => p.role === 'misterwhite').name)
+    );
+    mrWhitePositions.push(pos);
+  }
+
+  console.log(`  Mr White positions in playOrder across 20 runs: [${mrWhitePositions.join(', ')}]`);
+  check('Mr White never plays first', mrWhitePositions.every(p => p !== 0));
+  check('Mr White not always second (position varies)', !mrWhitePositions.every(p => p === 1));
+
   // Navigate back to setup for the main game flow
   await page.goto(BASE_URL);
   await page.waitForSelector('#name-input');
